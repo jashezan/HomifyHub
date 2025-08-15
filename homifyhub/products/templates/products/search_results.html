@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if request.GET.q %}
+        Search Results for "{{ request.GET.q }}" - HomifyHub
+    {% else %}
+        Search Results - HomifyHub
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-gradient-to-r from-green-600 to-blue-700 py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+            <i class="fas fa-search mr-3"></i>Search Results
+        </h1>
+        {% if request.GET.q %}
+            <p class="text-xl text-green-100">
+                Showing results for <span class="font-semibold">"{{ request.GET.q }}"</span>
+            </p>
+        {% else %}
+            <p class="text-xl text-green-100">Enter a search term to find products</p>
+        {% endif %}
+    </div>
+</section>
+
+<div class="container mx-auto px-4 py-12">
+    {% if request.GET.q %}
+        <!-- Search Bar -->
+        <div class="max-w-2xl mx-auto mb-12">
+            <form action="{% url 'products:search_results' %}" method="get" class="flex">
+                <input type="text" name="q" placeholder="Search products..." 
+                       class="flex-1 px-6 py-4 border border-gray-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                       value="{{ request.GET.q }}">
+                <button type="submit" class="bg-blue-600 text-white px-8 py-4 rounded-r-2xl hover:bg-blue-700 transition-colors duration-300">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Results Count -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="text-lg text-gray-600">
+                <strong>{{ products|length }}</strong> 
+                {% if products|length == 1 %}result{% else %}results{% endif %} found
+            </div>
+            {% if products %}
+                <a href="{% url 'products:product_list' %}" class="text-blue-600 hover:text-blue-500 font-medium">
+                    <i class="fas fa-th-large mr-2"></i>Browse All Products
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if products %}
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {% for product in products %}
+                    {% include "macros/product_card.html" with product=product %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Results -->
+            <div class="text-center py-16">
+                <div class="mx-auto mb-8">
+                    <i class="fas fa-search text-gray-300 text-6xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">No products found</h3>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                    We couldn't find any products matching "<strong>{{ request.GET.q }}</strong>". 
+                    Try adjusting your search terms or browse our categories.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+                        <i class="fas fa-th-large mr-2"></i>Browse All Products
+                    </a>
+                    <a href="{% url 'core:home' %}" class="btn-outline">
+                        <i class="fas fa-home mr-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Search Form -->
+        <div class="max-w-2xl mx-auto text-center py-16">
+            <div class="mb-8">
+                <i class="fas fa-search text-gray-300 text-6xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Search Our Products</h2>
+            <p class="text-gray-600 mb-8">Find exactly what you're looking for</p>
+            
+            <form action="{% url 'products:search_results' %}" method="get" class="flex mb-8">
+                <input type="text" name="q" placeholder="Search for furniture, decor, appliances..." 
+                       class="flex-1 px-6 py-4 border border-gray-300 rounded-l-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                       required>
+                <button type="submit" class="bg-blue-600 text-white px-8 py-4 rounded-r-2xl hover:bg-blue-700 transition-colors duration-300">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+            </form>
+            
+            <div class="flex flex-wrap gap-2 justify-center">
+                <span class="text-gray-500 mr-2">Popular searches:</span>
+                <a href="?q=sofa" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">Sofa</a>
+                <a href="?q=dining+table" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">Dining Table</a>
+                <a href="?q=lamp" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">Lamp</a>
+                <a href="?q=chair" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition-colors duration-300">Chair</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

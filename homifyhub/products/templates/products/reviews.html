@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">All Reviews</h1>
+    {% for review in object_list %}  {# Assume ListView for all reviews if needed #}
+        <div class="bg-gray-100 p-4 rounded mb-4">
+            <p class="font-bold"><a href="{% url 'products:product_detail' review.product.slug %}">{{ review.product.name }}</a> - {{ review.rating }} stars by {{ review.user.username }}</p>
+            <p>{{ review.comment|safe }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

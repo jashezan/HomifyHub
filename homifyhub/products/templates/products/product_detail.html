@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ product.name }} - HomifyHub{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="bg-gray-50 py-4">
+    <div class="container mx-auto px-4">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li><a href="{% url 'core:home' %}" class="text-blue-600 hover:text-blue-500 transition-colors duration-300">Home</a></li>
+            <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+            <li><a href="{% url 'products:product_list' %}" class="text-blue-600 hover:text-blue-500 transition-colors duration-300">Products</a></li>
+            <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+            <li class="text-gray-600">{{ product.name|truncatechars:30 }}</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Product Images -->
+        <div class="component space-y-4">
+            <div class="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden">
+                {% if product.primary_image %}
+                    <img src="{{ product.primary_image.image_url }}" alt="{{ product.name }}" class="main-product-image w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                {% else %}
+                    <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-6xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Image Gallery -->
+            {% if product.images.count > 1 %}
+                <div class="grid grid-cols-4 gap-3">
+                    {% for image in product.images.all %}
+                        <div class="aspect-square bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 image-thumbnail {% if forloop.first %}ring-2 ring-blue-500{% endif %}" 
+                             data-full-image="{{ image.image_url }}">
+                            <img src="{{ image.image_url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Product Info -->
+        <div class="component space-y-6">
+            <!-- Title & Price -->
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
+                <div class="flex items-center space-x-4 mb-4">
+                    {% if product.variants.first and product.variants.first.discount_price %}
+                        <span class="text-3xl font-bold text-green-600">${{ product.variants.first.discount_price }}</span>
+                        <span class="text-xl text-gray-500 line-through">${{ product.variants.first.price }}</span>
+                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+                            {% widthratio product.variants.first.discount_price product.variants.first.price 100 as discount_percent %}
+                            {{ discount_percent|floatformat:0 }}% OFF
+                        </span>
+                    {% else %}
+                        <span class="text-3xl font-bold text-gray-900">${{ product.min_price }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="flex items-center space-x-3">
+                {% with total_stock=product.total_stock %}
+                    {% with low_threshold=10 %}
+                        {% if total_stock > low_threshold %}
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="font-semibold">In Stock ({{ total_stock }} available)</span>
+                            </div>
+                        {% elif total_stock > 0 %}
+                            <div class="flex items-center text-orange-600">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <span class="font-semibold">Low Stock ({{ total_stock }} left)</span>
+                            </div>
+                        {% else %}
+                            <div class="flex items-center text-red-600">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <span class="font-semibold">Out of Stock</span>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endwith %}
+            </div>
+            
+            <!-- Description -->
+            <div class="prose prose-lg max-w-none">
+                <p class="text-gray-700 leading-relaxed">{{ product.description|safe }}</p>
+            </div>
+            
+            <!-- Variants -->
+            {% if product.has_variants %}
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Choose Variant</h3>
+                    <select id="variant-select" class="input-field">
+                        {% for variant in variants %}
+                            <option value="{{ variant.id }}" data-price="{{ variant.final_price }}">
+                                {{ variant.name }} - ${{ variant.final_price }}
+                                {% if variant.attributes %}
+                                    ({% for key, value in variant.attributes.items %}{{ value }}{% if not forloop.last %}, {% endif %}{% endfor %})
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            
+            <!-- Customization Options -->
+            {% if product.is_customizable and product.customization_options %}
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Customize Your Product</h3>
+                    {% for key, options in product.customization_options.items %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ key|title }}</label>
+                            <select class="input-field">
+                                {% for option in options %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Quantity Selector -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-sort-numeric-up mr-2 text-blue-500"></i>Quantity
+                </h3>
+                <div class="quantity-wrapper">
+                    <button type="button" class="quantity-btn quantity-btn-decrease" onclick="changeQuantity('quantity', -1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" id="quantity" value="1" min="1" max="{{ product.total_stock }}" class="quantity-input" readonly>
+                    <button type="button" class="quantity-btn quantity-btn-increase" onclick="changeQuantity('quantity', 1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="addToCart('{{ product.slug }}')" class="btn btn-primary flex-1 py-4 touch-target">
+                    <i class="fas fa-shopping-cart mr-3"></i>
+                    Add to Cart
+                </button>
+                <button onclick="addToWishlist('{{ product.slug }}')" class="btn btn-secondary flex-1 py-4 touch-target">
+                    <i class="fas fa-heart mr-3"></i>
+                    Add to Wishlist
+                </button>
+            </div>
+            
+            <!-- Buy Now Button -->
+            <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300">
+                <i class="fas fa-bolt mr-3"></i>
+                Buy Now
+            </button>
+            
+            <!-- Product Features -->
+            <div class="grid grid-cols-2 gap-4 pt-6 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-truck text-blue-500"></i>
+                    <span class="text-sm text-gray-600">Free Shipping</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-undo text-blue-500"></i>
+                    <span class="text-sm text-gray-600">30-Day Returns</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-shield-alt text-blue-500"></i>
+                    <span class="text-sm text-gray-600">1-Year Warranty</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-headset text-blue-500"></i>
+                    <span class="text-sm text-gray-600">24/7 Support</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Product Details Tabs -->
+    <div class="mt-16">
+        <div class="border-b border-gray-200">
+            <nav class="flex space-x-8" aria-label="Tabs">
+                <button class="tab-button active" data-tab="specifications">
+                    <i class="fas fa-list-ul mr-2"></i>Specifications
+                </button>
+                <button class="tab-button" data-tab="reviews">
+                    <i class="fas fa-star mr-2"></i>Reviews
+                </button>
+                {% if product.youtube_video_url %}
+                <button class="tab-button" data-tab="video">
+                    <i class="fas fa-play mr-2"></i>Video
+                </button>
+                {% endif %}
+            </nav>
+        </div>
+        
+        <!-- Specifications Tab -->
+        <div id="specifications" class="tab-content active">
+            {% if product.specifications %}
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold mb-6">Product Specifications</h3>
+                    <div class="card p-6">
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {% for key, value in product.specifications.items %}
+                                <div class="border-b border-gray-100 pb-4">
+                                    <dt class="font-semibold text-gray-900">{{ key|title }}</dt>
+                                    <dd class="text-gray-600 mt-1">{{ value }}</dd>
+                                </div>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            {% else %}
+                <div class="mt-8 text-center py-12">
+                    <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
+                    <p class="text-gray-500">No specifications available for this product.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Reviews Tab -->
+        <div id="reviews" class="tab-content">
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-6">Customer Reviews</h3>
+                {% if reviews %}
+                    <div class="space-y-6">
+                        {% for review in reviews %}
+                            <div class="card p-6">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-bold">{{ review.user.first_name|first|upper }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">{{ review.user.get_full_name|default:review.user.username }}</p>
+                                            <div class="flex items-center space-x-1">
+                                                {% for i in "12345" %}
+                                                    {% if i|add:0 <= review.rating %}
+                                                        <i class="fas fa-star text-yellow-400"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-gray-300"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-gray-500">{{ review.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <p class="text-gray-700">{{ review.comment|safe }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-comments text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500 mb-4">No reviews yet. Be the first to review this product!</p>
+                    </div>
+                {% endif %}
+                
+                <!-- Review Form -->
+                {% if user.is_authenticated %}
+                    <div class="mt-12 card p-6">
+                        <h4 class="text-lg font-bold mb-4">Leave a Review</h4>
+                        <form method="post" class="space-y-4">
+                            {% csrf_token %}
+                            {% if form %}
+                                {{ form|crispy }}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane mr-2"></i>Submit Review
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="mt-8 text-center">
+                        <p class="text-gray-600 mb-4">Please log in to leave a review</p>
+                        <a href="{% url 'users:customer_login' %}" class="btn btn-primary">Login to Review</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Video Tab -->
+        {% if product.youtube_video_url %}
+        <div id="video" class="tab-content">
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-6">Product Video</h3>
+                <div class="aspect-video rounded-2xl overflow-hidden shadow-lg">
+                    <iframe width="100%" height="100%" src="{{ product.youtube_video_url }}" frameborder="0" allowfullscreen class="w-full h-full"></iframe>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_products %}
+        <div class="component mt-16 p-8">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gradient">
+                <i class="fas fa-sparkles mr-3"></i>You Might Also Like
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for related in related_products %}
+                    <a href="{% url 'products:product_detail' related.slug %}" class="product-card group">
+                        <div class="aspect-square bg-gray-200 overflow-hidden">
+                            {% if related.primary_image %}
+                                <img src="{{ related.primary_image.image_url }}" alt="{{ related.name }}" class="product-image">
+                            {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-4">
+                            <h3 class="product-title">{{ related.name|truncatechars:50 }}</h3>
+                            <div class="flex items-center justify-between">
+                                <p class="product-price">${{ related.min_price }}</p>
+                                {% if related.total_stock > 0 %}
+                                    <span class="product-stock-indicator stock-in">
+                                        <i class="fas fa-check-circle mr-1"></i>In Stock
+                                    </span>
+                                {% else %}
+                                    <span class="product-stock-indicator stock-out">
+                                        <i class="fas fa-times-circle mr-1"></i>Out of Stock
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-3 flex space-x-2">
+                                <button onclick="HomifyHub.addToCart('{{ related.slug }}')" 
+                                        class="btn btn-primary btn-sm flex-1"
+                                        {% if related.total_stock == 0 %}disabled{% endif %}>
+                                    <i class="fas fa-shopping-cart mr-1"></i>Add to Cart
+                                </button>
+                                <button onclick="HomifyHub.toggleWishlist('{{ related.slug }}')" 
+                                        class="btn btn-outline-danger btn-sm">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+// Tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding content
+            button.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+});
+
+// Image gallery functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Image thumbnail switching
+    const thumbnails = document.querySelectorAll('.image-thumbnail');
+    const mainImage = document.querySelector('.main-product-image');
+    
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            // Remove active class from all thumbnails
+            thumbnails.forEach(t => t.classList.remove('ring-2', 'ring-blue-500'));
+            
+            // Add active class to clicked thumbnail
+            this.classList.add('ring-2', 'ring-blue-500');
+            
+            // Update main image
+            const newImageSrc = this.dataset.fullImage;
+            if (mainImage && newImageSrc) {
+                mainImage.src = newImageSrc;
+            }
+        });
+    });
+    
+    // Initialize lazy loading if images are present
+    initializeLazyLoading();
+    
+    // Initialize badge visibility
+    showBadgesIfNotEmpty();
+});
+</script>
+
+<style>
+.tab-button {
+    @apply py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all duration-300;
+}
+
+.tab-button.active {
+    @apply border-blue-500 text-blue-600;
+}
+
+.tab-content {
+    @apply hidden;
+}
+
+.tab-content.active {
+    @apply block;
+}
+</style>
+{% endblock %}
