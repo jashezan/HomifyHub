@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Wishlist - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="component bg-white rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-heart text-red-500 mr-3"></i>Your Wishlist
+            </h1>
+            {% if products %}
+                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ products|length }} item{{ products|length|pluralize }}
+                </span>
+            {% endif %}
+        </div>
+        
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for product in products %}
+                    <div class="component relative group">
+                        {% include "macros/product_card.html" with product=product %}
+                        <div class="mt-4 space-y-2">
+                            <a href="{% url 'carts:add_to_cart' product.slug %}" 
+                               class="btn btn-primary w-full transition-colors duration-200 hover:bg-blue-700">
+                                <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+                            </a>
+                            <a href="{% url 'carts:remove_from_wishlist' product.slug %}" 
+                               class="btn btn-outline-danger w-full transition-colors duration-200 hover:bg-red-50">
+                                <i class="fas fa-heart-broken mr-2"></i>Remove from Wishlist
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="component text-center py-16">
+                <div class="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-heart text-red-500 text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h3>
+                <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                    Start adding products to your wishlist by clicking the heart icon on products you love
+                </p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag mr-2"></i>Browse Products
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

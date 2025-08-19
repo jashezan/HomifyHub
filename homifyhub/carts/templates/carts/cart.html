@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Your Items | HomifyHub{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-700 py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl font-bold text-white mb-4">
+            <i class="fas fa-shopping-cart mr-3"></i>Your Shopping Cart
+        </h1>
+        <p class="text-xl text-blue-100">Review your items and proceed to checkout</p>
+    </div>
+</section>
+
+<div class="container mx-auto px-4 py-12">
+    {% if items %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="component">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Cart Items ({{ items|length }})</h2>
+                        <button class="text-gray-500 hover:text-red-500 transition-colors duration-300">
+                            <i class="fas fa-trash mr-2"></i>Clear Cart
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% for item in items %}
+                            <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow duration-300">
+                                <!-- Product Image -->
+                                <div class="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+                                    {% if item.variant and item.variant.product.images.first %}
+                                        <img src="{{ item.variant.product.images.first.image_url }}" 
+                                             alt="{{ item.variant.name }}" 
+                                             loading="lazy"
+                                             class="w-full h-full object-cover">
+                                    {% elif item.product and item.product.images.first %}
+                                        <img src="{{ item.product.images.first.image_url }}" 
+                                             alt="{{ item.product.name }}" 
+                                             loading="lazy"
+                                             class="w-full h-full object-cover">
+                                    {% elif item.bundle and item.bundle.image %}
+                                        <img src="{{ item.bundle.image.url }}" 
+                                             alt="{{ item.bundle.name }}" 
+                                             loading="lazy"
+                                             class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <i class="fas fa-image text-gray-400"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Product Details -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 truncate">
+                                        {% if item.variant %}
+                                            {{ item.variant.product.name }} - {{ item.variant.name }}
+                                        {% elif item.product %}
+                                            {{ item.product.name }}
+                                        {% elif item.bundle %}
+                                            {{ item.bundle.name }}
+                                        {% else %}
+                                            Unknown Item
+                                        {% endif %}
+                                    </h3>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        {% if item.variant and item.variant.product.categories.first %}
+                                            {{ item.variant.product.categories.first.name }}
+                                        {% elif item.product and item.product.categories.first %}
+                                            {{ item.product.categories.first.name }}
+                                        {% elif item.bundle %}
+                                            Bundle
+                                        {% else %}
+                                            Product
+                                        {% endif %}
+                                    </p>
+                                    
+                                    <!-- Product Options -->
+                                    {% if item.variant and item.variant.attributes %}
+                                        <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                            {% for key, value in item.variant.attributes.items %}
+                                                <span>{{ key|capfirst }}: {{ value }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Quantity Controls -->
+                                <div class="flex items-center space-x-3">
+                                    {% if user.is_authenticated %}
+                                        <form method="post" action="{% url 'carts:update_cart_item' item.id %}" class="quantity-wrapper-sm">
+                                            {% csrf_token %}
+                                            <button type="button" class="quantity-btn quantity-btn-decrease" 
+                                                    onclick="this.nextElementSibling.stepDown(); this.closest('form').submit();">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99"
+                                                   class="quantity-input-sm" onchange="this.form.submit();">
+                                            <button type="button" class="quantity-btn quantity-btn-increase"
+                                                    onclick="this.previousElementSibling.stepUp(); this.closest('form').submit();">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-600">Qty: {{ item.quantity }}</span>
+                                            <p class="text-xs text-gray-500">(Login to modify)</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Price -->
+                                <div class="text-right">
+                                    <div class="font-bold text-gray-900">
+                                        {% if item.variant %}
+                                            ${{ item.variant.final_price }}
+                                        {% elif item.product %}
+                                            ${{ item.product.min_price }}
+                                        {% elif item.bundle %}
+                                            ${{ item.bundle.final_price }}
+                                        {% else %}
+                                            $0.00
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-sm text-gray-500">each</div>
+                                    {% if item.quantity > 1 %}
+                                        <div class="text-sm font-semibold text-blue-600">
+                                            Total: ${{ item.total_price }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                {% if user.is_authenticated %}
+                                    <form method="post" action="{% url 'carts:remove_cart_item' item.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors duration-300 p-2"
+                                                onclick="return confirm('Remove this item from cart?')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="{% url 'carts:remove_cart_item' item.product.pk %}" class="text-gray-400 hover:text-red-500 transition-colors duration-300 p-2"
+                                       onclick="return confirm('Remove this item from cart?')">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Recommended Products -->
+                <div class="component">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">You Might Also Like</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Placeholder for recommended products -->
+                        <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-300">
+                            <div class="w-16 h-16 bg-gray-200 rounded-lg"></div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900">Recommended Item</h4>
+                                <p class="text-sm text-gray-600">$99.99</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="component sticky top-24">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal ({{ items|length }} items)</span>
+                            <span>${{ cart.total_price|default:'0.00' }}</span>
+                        </div>
+                        
+                        <div class="flex justify-between text-gray-600">
+                            <span>Shipping</span>
+                            <span class="text-green-600">Free</span>
+                        </div>
+                        
+                        <div class="flex justify-between text-gray-600">
+                            <span>Tax</span>
+                            <span>${{ tax|default:'0.00' }}</span>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="flex justify-between text-lg font-bold text-gray-900">
+                                <span>Total</span>
+                                <span>${{ cart.total_price|default:'0.00' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Promo Code -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Enter code" 
+                                   class="flex-1 input-field text-sm py-2">
+                            <button class="btn btn-secondary px-4 py-2 text-sm">Apply</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Button -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'orders:checkout' %}" class="w-full btn btn-primary text-lg py-4 text-center block">
+                            <i class="fas fa-lock mr-3"></i>Secure Checkout
+                        </a>
+                    {% else %}
+                        <div class="space-y-3">
+                            <a href="{% url 'users:login' %}?next={% url 'orders:checkout' %}" class="w-full btn btn-primary text-lg py-4 text-center block">
+                                <i class="fas fa-sign-in-alt mr-3"></i>Login to Checkout
+                            </a>
+                            <a href="{% url 'users:register' %}" class="w-full btn-outline text-center block py-3">
+                                <i class="fas fa-user-plus mr-2"></i>Create Account
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Security Badge -->
+                    <div class="mt-4 text-center">
+                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                            <i class="fas fa-shield-alt text-green-500"></i>
+                            <span>SSL Secured Checkout</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 text-center mb-3">We Accept</p>
+                        <div class="flex justify-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                                <i class="fab fa-cc-visa text-white text-sm"></i>
+                            </div>
+                            <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center">
+                                <i class="fab fa-cc-mastercard text-white text-sm"></i>
+                            </div>
+                            <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                                <i class="fab fa-cc-paypal text-white text-sm"></i>
+                            </div>
+                            <div class="w-8 h-8 bg-gray-800 rounded flex items-center justify-center">
+                                <i class="fab fa-cc-stripe text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Empty Cart -->
+        <div class="text-center py-16">
+            <div class="w-32 h-32 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full mx-auto mb-8 flex items-center justify-center">
+                <i class="fas fa-shopping-cart text-gray-400 text-5xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Your Cart is Empty</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-md mx-auto">
+                Looks like you haven't added anything to your cart yet. Start shopping to fill it up!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary text-lg px-8 py-4">
+                    <i class="fas fa-shopping-bag mr-3"></i>Start Shopping
+                </a>
+                <a href="{% url 'carts:wishlist' %}" class="btn-outline text-lg px-8 py-4">
+                    <i class="fas fa-heart mr-3"></i>View Wishlist
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
