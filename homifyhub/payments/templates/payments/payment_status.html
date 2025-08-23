@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Status - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    {% if payment %}
+        <h1 class="text-3xl font-bold mb-6">Payment Status for Order {{ payment.order.order_number|default:"Unknown" }}</h1>
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <p><strong>Status:</strong> {{ payment.status }}</p>
+            <p><strong>Method:</strong> {{ payment.method }}</p>
+            <p><strong>Amount:</strong> ${{ payment.amount }}</p>
+            <p><strong>Transaction ID:</strong> {{ payment.transaction_id or 'N/A' }}</p>
+            <p><strong>Confirmed:</strong> {% if payment.is_confirmed %}Yes{% else %}No{% endif %}</p>
+            {% if payment.note %}
+                <p><strong>Note:</strong> {{ payment.note }}</p>
+            {% endif %}
+            {% if payment.proof_url %}
+                <p><strong>Proof:</strong> <a href="{{ payment.proof_url }}" target="_blank" class="text-blue-500">View Proof</a></p>
+            {% endif %}
+            {% if payment.status == 'Cancelled' %}
+                <p class="text-red-500">Payment cancelled.{% if payment.note %} Reason: {{ payment.note }}{% endif %}</p>
+            {% endif %}
+        </div>
+        <div class="mt-6 flex gap-4">
+            <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">Back to Orders</a>
+            {% if payment.order %}
+                <a href="{% url 'orders:order_tracking' payment.order.id %}" class="btn btn-primary">Track Order</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <h1 class="text-3xl font-bold mb-6">Payment Status</h1>
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <p class="text-red-600">Payment information not found.</p>
+            <a href="{% url 'core:home' %}" class="btn btn-primary mt-4">Back to Home</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

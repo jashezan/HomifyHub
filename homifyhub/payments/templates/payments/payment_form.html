@@ -1,0 +1,37 @@
+{% load crispy_forms_tags %}
+{% extends "base.html" %}
+
+{% block title %}Payment for Order {{ order.order_number|default:"Unknown" }} - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Payment Details</h1>
+    {% if order %}
+        <p>Please make the payment via your chosen method and enter the details below.</p>
+        <p><strong>Order Total:</strong> ${{ order.total_amount }}</p>
+        
+        {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <strong>Please correct the following errors:</strong>
+                <ul class="list-disc list-inside mt-2">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="text-red-600">Order not found. Please contact support.</p>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" class="space-y-4 mt-6">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="flex gap-4">
+            <button type="submit" class="btn btn-primary">Submit Payment</button>
+            <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">Back to Orders</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
