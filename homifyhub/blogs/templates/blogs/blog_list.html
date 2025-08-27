@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - HomifyHub{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-gradient-to-r from-purple-600 to-blue-700 py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl font-bold text-white mb-4">
+            <i class="fas fa-blog mr-3"></i>HomifyHub Blog
+        </h1>
+        <p class="text-xl text-purple-100">Discover tips, trends, and inspiration for your home</p>
+    </div>
+</section>
+
+<div class="container mx-auto px-4 py-12">
+    {% if posts %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {% for post in posts %}
+                <article class="card overflow-hidden group cursor-pointer transform hover:scale-105 transition-all duration-300">
+                    <!-- Featured Image Placeholder -->
+                    <div class="h-48 bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+                        <i class="fas fa-image text-white text-4xl opacity-50"></i>
+                    </div>
+                    
+                    <div class="p-6">
+                        <!-- Meta Info -->
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <div class="flex items-center mr-4">
+                                <i class="fas fa-user mr-2"></i>
+                                <span>{{ post.author.get_full_name|default:post.author.username }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar mr-2"></i>
+                                <span>{{ post.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Title -->
+                        <h2 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+                            <a href="{% url 'blogs:blog_post' post.slug %}">
+                                {{ post.title }}
+                            </a>
+                        </h2>
+                        
+                        <!-- Excerpt -->
+                        <p class="text-gray-600 mb-4 line-clamp-3">
+                            {{ post.excerpt|default:post.content|truncatewords:25 }}
+                        </p>
+                        
+                        <!-- Read More Button -->
+                        <a href="{% url 'blogs:blog_post' post.slug %}" class="inline-flex items-center text-purple-600 hover:text-purple-500 font-semibold transition-colors duration-300">
+                            Read More
+                            <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination (if needed) -->
+        {% if is_paginated %}
+            <div class="flex justify-center mt-12">
+                <nav class="flex items-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="mx-auto mb-8">
+                <i class="fas fa-blog text-gray-300 text-6xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">No Blog Posts Yet</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                We're working on some amazing content for you. Check back soon for the latest home design tips and inspiration!
+            </p>
+            <a href="{% url 'core:home' %}" class="btn btn-primary">
+                <i class="fas fa-home mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
