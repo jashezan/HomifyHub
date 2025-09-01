@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Your Dashboard</h1>
+    
+    <!-- Recent Orders -->
+    <h2 class="text-2xl font-bold mb-4">Recent Orders</h2>
+    {% for order in recent_orders %}
+        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Total:</strong> ${{ order.total_amount }}</p>
+            <a href="{% url 'orders:order_tracking' order.id %}" class="btn btn-primary">Track Order</a>
+        </div>
+    {% endfor %}
+    {% if not recent_orders %}
+        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
+            <p>No recent orders.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+    
+    <!-- Wishlist -->
+    <h2 class="text-2xl font-bold mb-4">Wishlist</h2>
+    <p>You have {{ wishlist_count|default:0 }} items in your wishlist.</p>
+    <a href="{% url 'carts:wishlist' %}" class="btn btn-secondary">View Wishlist</a>
+</div>
+{% endblock %}
