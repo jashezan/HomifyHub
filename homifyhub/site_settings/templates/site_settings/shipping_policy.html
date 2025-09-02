@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Shipping Policy - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Shipping Policy</h1>
+    <p class="mb-4">We offer various shipping options to ensure timely delivery.</p>
+    <h2 class="text-2xl font-bold mb-2">Delivery Methods</h2>
+    <ul class="list-disc pl-6 mb-4">
+        {% for method in delivery_methods %}
+            <li>{{ method.name }} - ${{ method.cost }} (Est. {{ method.estimated_days }} days)</li>
+        {% endfor %}
+        {% if not delivery_methods %}
+            <li>Standard Shipping - Contact us for details</li>
+        {% endif %}
+    </ul>
+    <p>Contact us at {{ site_settings.contact_email if site_settings else 'support@homifyhub.com' }} for shipping inquiries.</p>
+</div>
+{% endblock %}

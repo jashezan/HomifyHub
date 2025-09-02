@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Return and Refund Policy - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Return and Refund Policy</h1>
+    <p class="mb-4">We want you to be satisfied with your purchase. Here’s our return policy.</p>
+    <h2 class="text-2xl font-bold mb-2">Return Eligibility</h2>
+    <p class="mb-4">Items can be returned within 30 days if unused and in original condition.</p>
+    <h2 class="text-2xl font-bold mb-2">Refund Process</h2>
+    <p class="mb-4">Refunds are processed within 7 business days upon receipt of returned items.</p>
+    <p>Contact us at {{ site_settings.contact_email if site_settings else 'support@homifyhub.com' }} for return requests.</p>
+</div>
+{% endblock %}

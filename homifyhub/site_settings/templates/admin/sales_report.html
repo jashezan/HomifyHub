@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Sales Report - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Sales Report</h1>
+    <p><strong>Total Orders:</strong> {{ total_orders|default:0 }}</p>
+    <p><strong>Total Sales:</strong> ${{ total_sales|default:0 }}</p>
+    <h2 class="text-2xl font-bold mt-6 mb-4">Delivered Orders</h2>
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="border p-2">Order Number</th>
+                <th class="border p-2">User</th>
+                <th class="border p-2">Total Amount</th>
+                <th class="border p-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td class="border p-2">{{ order.order_number }}</td>
+                    <td class="border p-2">{{ order.user.email|default:"N/A" }}</td>
+                    <td class="border p-2">${{ order.total_amount }}</td>
+                    <td class="border p-2">{{ order.created_at|date:"Y-m-d H:i"|default:"N/A" }}</td>
+                </tr>
+            {% endfor %}
+            {% if not orders %}
+                <tr>
+                    <td colspan="4" class="border p-2 text-center text-gray-500">No delivered orders found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

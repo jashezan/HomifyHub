@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Sitemap - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Sitemap</h1>
+    <ul class="list-disc pl-6">
+        <li><a href="{% url 'core:home' %}" class="text-blue-500">Home</a></li>
+        <li><a href="{% url 'products:product_list' %}" class="text-blue-500">Products</a></li>
+        <li><a href="{% url 'carts:cart' %}" class="text-blue-500">Cart</a></li>
+        <li><a href="{% url 'carts:wishlist' %}" class="text-blue-500">Wishlist</a></li>
+        <li><a href="{% url 'orders:order_history' %}" class="text-blue-500">Order History</a></li>
+        <li><a href="{% url 'users:profile' %}" class="text-blue-500">Profile</a></li>
+        <li><a href="{% url 'site_settings:privacy' %}" class="text-blue-500">Privacy Policy</a></li>
+        <li><a href="{% url 'site_settings:terms' %}" class="text-blue-500">Terms of Service</a></li>
+        <li><a href="{% url 'site_settings:shipping_policy' %}" class="text-blue-500">Shipping Policy</a></li>
+        <li><a href="{% url 'site_settings:return_refund_policy' %}" class="text-blue-500">Return and Refund Policy</a></li>
+    </ul>
+</div>
+{% endblock %}
