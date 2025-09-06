@@ -1,0 +1,14 @@
+<div id="cookie-consent" class="fixed bottom-0 w-full bg-gray-800 text-white p-4 flex justify-between items-center">
+    <p>We use cookies to enhance your experience. By continuing, you agree to our Privacy Policy.</p>
+    <button id="accept-cookies" class="btn btn-primary">Accept</button>
+</div>
+<script>
+    document.getElementById('accept-cookies').addEventListener('click', () => {
+        document.getElementById('cookie-consent').style.display = 'none';
+        // Optionally set cookie consent in localStorage
+        localStorage.setItem('cookieConsent', 'accepted');
+    });
+    if (localStorage.getItem('cookieConsent') === 'accepted') {
+        document.getElementById('cookie-consent').style.display = 'none';
+    }
+</script>

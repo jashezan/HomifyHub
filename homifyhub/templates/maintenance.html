@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Under Maintenance - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 text-center">
+    <h1 class="text-5xl font-bold mb-6">Site Under Maintenance</h1>
+    <p class="text-lg mb-4">We're performing some updates to improve your experience. Please check back soon.</p>
+    <p>Contact support at {{ site_settings.contact_email }} for assistance.</p>
+</div>
+{% endblock %}

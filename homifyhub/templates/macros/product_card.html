@@ -1,0 +1,119 @@
+<div class="card group cursor-pointer h-full flex flex-col">
+    <div class="relative overflow-hidden rounded-t-2xl">
+        {% if product.primary_image and product.primary_image.image_url %}
+            <img src="{{ product.primary_image.image_url }}" 
+                 alt="{{ product.name }}" 
+                 class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500">
+        {% elif product.thumbnail %}
+            <img src="{{ product.thumbnail.url }}" 
+                 alt="{{ product.name }}" 
+                 class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500">
+        {% elif product.images.first %}
+            <img src="{{ product.images.first.image.url }}" 
+                 alt="{{ product.name }}" 
+                 class="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-500">
+        {% else %}
+            <div class="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                <i class="fas fa-image text-gray-400 text-4xl"></i>
+            </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {% if user.is_authenticated %}
+            <button class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-colors duration-300" 
+                    title="Add to Wishlist"
+                    onclick="HomifyHub.addToWishlist('{{ product.slug }}')">
+                <i class="fas fa-heart"></i>
+            </button>
+            {% endif %}
+            <a href="{% url 'products:product_detail' product.slug %}" 
+               class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-50 hover:text-blue-500 transition-colors duration-300" 
+               title="Quick View">
+                <i class="fas fa-eye"></i>
+            </a>
+        </div>
+        
+        <!-- Product Badges -->
+        <div class="absolute top-4 left-4 flex flex-col space-y-2">
+            {% if product.variants.first.discount_price %}
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    Sale
+                </span>
+            {% endif %}
+            {% if product.variants.first.total_stock and product.variants.first.total_stock < 10 %}
+                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    Low Stock
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="p-6 flex-1 flex flex-col">
+        <!-- Product Name -->
+        <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+            <a href="{% url 'products:product_detail' product.slug %}" class="block">
+                {{ product.name|truncatechars:50 }}
+            </a>
+        </h3>
+        
+        <!-- Product Description -->
+        {% if product.description %}
+            <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                {{ product.description|truncatechars:80 }}
+            </p>
+        {% endif %}
+        
+        <!-- Price -->
+        <div class="mb-4 flex-1">
+            {% if product.variants.first %}
+                {% with variant=product.variants.first %}
+                    <div class="flex items-center space-x-2">
+                        {% if variant.discount_price %}
+                            <span class="text-xl font-bold text-blue-600">${{ variant.discount_price }}</span>
+                            <span class="text-sm text-gray-500 line-through">${{ variant.price }}</span>
+                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                                {% widthratio variant.discount_price variant.price 100 as discount_percent %}
+                                {{ discount_percent|floatformat:0 }}% OFF
+                            </span>
+                        {% else %}
+                            <span class="text-xl font-bold text-gray-900">${{ variant.price }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Stock Status -->
+                    {% if variant.total_stock %}
+                        {% if variant.total_stock < 10 %}
+                            <p class="text-sm text-orange-600 mt-1">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Only {{ variant.total_stock }} left!
+                            </p>
+                        {% elif variant.total_stock > 0 %}
+                            <p class="text-sm text-green-600 mt-1">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                In Stock
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                <span class="text-xl font-bold text-gray-900">${{ product.min_price|default:"0.00" }}</span>
+            {% endif %}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex space-x-2 mt-auto">
+            <a href="{% url 'products:product_detail' product.slug %}" 
+               class="btn btn-primary flex-1 text-center text-sm">
+                <i class="fas fa-eye mr-2"></i>View Details
+            </a>
+            <button onclick="HomifyHub.addToCart('{{ product.slug }}')" 
+                    class="btn btn-accent px-4 text-sm"
+                    title="Add to Cart">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cart and wishlist functionality is handled by centralized HomifyHub JavaScript functions -->

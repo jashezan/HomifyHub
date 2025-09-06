@@ -1,0 +1,17 @@
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">How do I track my order?</h3>
+            <p>Visit the <a href="{% url 'orders:order_history' %}" class="text-blue-500">Order History</a> page to track your orders.</p>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold">What are the payment methods?</h3>
+            <p>We accept {{ payment_methods|join:", " }}. See details during checkout.</p>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold">What is your return policy?</h3>
+            <p>Check our <a href="{% url 'site_settings:return_refund_policy' %}" class="text-blue-500">Return and Refund Policy</a> for details.</p>
+        </div>
+    </div>
+</div>

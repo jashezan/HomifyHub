@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Returns & Refunds - HomifyHub{% endblock %}
+{% block description %}Learn about HomifyHub's return policy, refund process, and exchange options for home improvement products.{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-green-50 to-blue-50 py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-8 text-center">Returns & Refunds</h1>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <div class="prose prose-lg max-w-none">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Return Policy Overview</h2>
+                    
+                    <div class="bg-green-50 p-6 rounded-lg mb-8 border-l-4 border-green-400">
+                        <h3 class="text-xl font-semibold text-green-800 mb-3">30-Day Return Guarantee</h3>
+                        <p class="text-green-700">
+                            We offer a 30-day return policy on most items. Items must be in original 
+                            condition with all packaging and accessories included.
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Returnable Items</h3>
+                            <ul class="text-gray-700 space-y-2">
+                                <li>✓ Unused tools and equipment</li>
+                                <li>✓ Home decor items</li>
+                                <li>✓ Hardware in original packaging</li>
+                                <li>✓ Appliances (unopened)</li>
+                                <li>✓ Building materials (unused)</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Non-Returnable Items</h3>
+                            <ul class="text-gray-700 space-y-2">
+                                <li>✗ Custom-cut materials</li>
+                                <li>✗ Electrical items (used)</li>
+                                <li>✗ Plumbing fixtures (installed)</li>
+                                <li>✗ Paint and chemicals</li>
+                                <li>✗ Personal protective equipment</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Return Process</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">1</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Contact Customer Service</h4>
+                                <p class="text-gray-700">Email us or call to initiate your return request.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">2</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Receive Return Label</h4>
+                                <p class="text-gray-700">We'll email you a prepaid return shipping label.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">3</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Package & Ship</h4>
+                                <p class="text-gray-700">Pack the item securely and attach the return label.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">4</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Receive Refund</h4>
+                                <p class="text-gray-700">Refund processed within 5-7 business days after we receive the item.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Refund Information</h3>
+                    <ul class="text-gray-700 space-y-3 mb-6">
+                        <li>• Refunds are processed to the original payment method</li>
+                        <li>• Shipping costs are non-refundable (except for defective items)</li>
+                        <li>• Return shipping is free for defective or damaged items</li>
+                        <li>• Exchanges available for size/color variations</li>
+                        <li>• Store credit option available for faster processing</li>
+                    </ul>
+                    
+                    <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400">
+                        <h4 class="text-lg font-semibold text-blue-800 mb-2">Damaged or Defective Items</h4>
+                        <p class="text-blue-700">
+                            If you receive a damaged or defective item, please contact us immediately. 
+                            We'll provide a full refund or replacement at no cost to you.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="{% url 'core:contact' %}" class="inline-block bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors mr-4">
+                    Start a Return
+                </a>
+                <a href="{% url 'core:help_center' %}" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Return FAQ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

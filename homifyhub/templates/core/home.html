@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Transform Your Space with Style{% endblock %}
+
+{% block content %}
+<!-- Top Notification Bar -->
+{% if top_notification %}
+<div id="top-notification" class="relative z-50" style="background-color: {{ top_notification.background_color }}; color: {{ top_notification.text_color }};">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex-1 text-center">
+                {% if top_notification.link_url %}
+                    <a href="{{ top_notification.link_url }}" class="hover:opacity-80 transition-opacity duration-300">
+                        {{ top_notification.message }}
+                    </a>
+                {% else %}
+                    {{ top_notification.message }}
+                {% endif %}
+            </div>
+            <button onclick="document.getElementById('top-notification').style.display='none'" class="ml-4 text-current hover:opacity-70 transition-opacity duration-300">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Hero Banner Section -->
+{% if banners %}
+<section class="relative overflow-hidden">
+    <div class="banner-slider" id="banner-slider">
+        {% for banner in banners %}
+        <div class="banner-slide {% if forloop.first %}active{% endif %}" style="background-image: url('{{ banner.image_url }}');">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative z-10 container mx-auto px-4 h-full flex items-center">
+                <div class="max-w-2xl">
+                    <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 animate-slide-up">
+                        {{ banner.title }}
+                    </h1>
+                    {% if banner.subtitle %}
+                    <p class="text-xl md:text-2xl text-gray-200 mb-8 animate-slide-up" style="animation-delay: 0.2s;">
+                        {{ banner.subtitle }}
+                    </p>
+                    {% endif %}
+                    {% if banner.button_text and banner.button_link %}
+                    <a href="{{ banner.button_link }}" class="btn btn-accent text-lg px-8 py-4 animate-slide-up" style="animation-delay: 0.4s;">
+                        {{ banner.button_text }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Banner Navigation -->
+    {% if banners|length > 1 %}
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
+        <div class="flex space-x-2">
+            {% for banner in banners %}
+            <button class="banner-dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}"></button>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <button class="absolute top-1/2 left-4 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-300" id="prev-banner">
+        <i class="fas fa-chevron-left text-white text-xl"></i>
+    </button>
+    <button class="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-300" id="next-banner">
+        <i class="fas fa-chevron-right text-white text-xl"></i>
+    </button>
+    {% endif %}
+</section>
+{% else %}
+<!-- Fallback Hero Section -->
+<section class="hero-gradient text-white py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-float">
+                Transform Your Space with <span class="text-yellow-300">Style</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                Discover premium furniture, decor, and home essentials that make your house a dream home
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'products:product_list' %}" class="btn btn-accent text-lg px-8 py-4">
+                    <i class="fas fa-shopping-bag mr-2"></i>Shop Now
+                </a>
+                <a href="#featured" class="btn-outline border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
+                    <i class="fas fa-arrow-down mr-2"></i>Explore Collection
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Icons -->
+    <div class="absolute top-20 left-10 animate-float text-white/20">
+        <i class="fas fa-couch text-4xl"></i>
+    </div>
+    <div class="absolute top-40 right-16 animate-float text-white/20" style="animation-delay: 2s;">
+        <i class="fas fa-lamp text-3xl"></i>
+    </div>
+    <div class="absolute bottom-32 left-20 animate-float text-white/20" style="animation-delay: 4s;">
+        <i class="fas fa-bed text-3xl"></i>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categories Section -->
+<section class="component py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+            <p class="text-xl text-gray-600">Find exactly what you need for every room</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <a href="{% url 'products:product_list' %}?category=living-room" class="card group text-center p-8 hover:bg-blue-50">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-couch text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Living Room</h3>
+                <p class="text-gray-600">Sofas, tables, entertainment units</p>
+            </a>
+            
+            <a href="{% url 'products:product_list' %}?category=bedroom" class="card group text-center p-8 hover:bg-purple-50">
+                <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-bed text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 group-hover:text-purple-600 transition-colors duration-300">Bedroom</h3>
+                <p class="text-gray-600">Beds, wardrobes, nightstands</p>
+            </a>
+            
+            <a href="{% url 'products:product_list' %}?category=kitchen" class="card group text-center p-8 hover:bg-green-50">
+                <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-utensils text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 group-hover:text-green-600 transition-colors duration-300">Kitchen & Dining</h3>
+                <p class="text-gray-600">Dining sets, storage, appliances</p>
+            </a>
+            
+            <a href="{% url 'products:product_list' %}?category=decor" class="card group text-center p-8 hover:bg-amber-50">
+                <div class="w-20 h-20 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-palette text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 group-hover:text-amber-600 transition-colors duration-300">Home Decor</h3>
+                <p class="text-gray-600">Lighting, artwork, accessories</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="component py-16" id="featured">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+            <p class="text-xl text-gray-600">Handpicked items that our customers love</p>
+        </div>
+        
+        {% if featured_products %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {% for product in featured_products %}
+                    {% include "macros/product_card.html" with product=product %}
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary text-lg px-8 py-4">
+                    <i class="fas fa-th-large mr-2"></i>View All Products
+                </a>
+            </div>
+        {% else %}
+            <div class="text-center py-16">
+                <div class="mx-auto mb-8">
+                    <i class="fas fa-box text-gray-300 text-6xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Coming Soon!</h3>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                    We're curating amazing products for you. Check back soon for our featured collection!
+                </p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+                    <i class="fas fa-th-large mr-2"></i>Browse All Products
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Shop by Category</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <div class="text-4xl mb-4">🛋️</div>
+                    <h3 class="font-semibold">Furniture</h3>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <div class="text-4xl mb-4">💡</div>
+                    <h3 class="font-semibold">Lighting</h3>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h3 class="font-semibold">Decor</h3>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <div class="text-4xl mb-4">🏺</div>
+                    <h3 class="font-semibold">Accessories</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

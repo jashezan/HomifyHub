@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">Terms of Service</h1>
+        
+        <div class="prose prose-lg max-w-none">
+            <p class="text-gray-600 mb-6">Last updated: {{ "now"|date:"F d, Y" }}</p>
+            
+            <h2>Acceptance of Terms</h2>
+            <p>By using HomifyHub, you agree to be bound by these Terms of Service and our Privacy Policy.</p>
+            
+            <h2>Use of Our Service</h2>
+            <p>You may use our service only for lawful purposes and in accordance with these Terms.</p>
+            
+            <h2>Account Registration</h2>
+            <p>You must provide accurate and complete information when creating an account and keep your account information updated.</p>
+            
+            <h2>Orders and Payment</h2>
+            <p>All orders are subject to acceptance and availability. Prices are subject to change without notice.</p>
+            
+            <h2>Shipping and Returns</h2>
+            <p>Please refer to our Shipping Policy and Returns Policy for detailed information about delivery and returns.</p>
+            
+            <h2>Contact Us</h2>
+            <p>If you have any questions about these Terms, please contact us at {% if contact_info %}{{ contact_info.email }}{% else %}legal@homifyhub.com{% endif %}.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
