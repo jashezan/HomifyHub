@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+{% extends "base.html" %}
+
+{% block title %}Cancel Order {{ order.order_number }} - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Cancel Order {{ order.order_number }}</h1>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <p class="mb-4"><strong>Order Number:</strong> {{ order.order_number }}</p>
+        <p class="mb-4"><strong>Status:</strong> {{ order.status }}</p>
+        <p class="mb-4"><strong>Total:</strong> ${{ order.total_amount }}</p>
+        
+        {% if order.is_cancellable %}
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="flex space-x-4">
+                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">Back to Order History</a>
+                </div>
+            </form>
+        {% else %}
+            <p class="text-red-500 mb-4">This order cannot be cancelled.</p>
+            <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">Back to Order History</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

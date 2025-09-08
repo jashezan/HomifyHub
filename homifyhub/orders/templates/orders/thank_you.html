@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Thank You for Your Order!</h1>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+        <p>Your order has been successfully placed. You will receive a confirmation soon.</p>
+        <p>Please complete the payment to proceed with order processing.</p>
+        <div class="flex space-x-4 mt-4">
+            <a href="{% url 'payments:payment_form' order.id %}" class="btn btn-primary">Complete Payment</a>
+            <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">View Order History</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

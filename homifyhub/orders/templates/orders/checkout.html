@@ -1,0 +1,39 @@
+{% load crispy_forms_tags %}
+{% extends "base.html" %}
+
+{% block title %}Checkout - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Cart Summary -->
+        <div>
+            <h2 class="text-2xl font-bold mb-4">Your Cart</h2>
+            {% if cart_items %}
+                {% for item in cart_items %}
+                    <div class="flex justify-between mb-4">
+                        <p>{{ item.variant.name if item.variant else (item.bundle.name if item.bundle else 'Unknown Item') }} (x{{ item.quantity }})</p>
+                        <p>${{ item.subtotal }}</p>
+                    </div>
+                {% endfor %}
+                {% if cart %}
+                    <p class="font-bold">Total: ${{ cart.total }}</p>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-500">Your cart is empty.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Checkout Form -->
+        <div>
+            <h2 class="text-2xl font-bold mb-4">Order Details</h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

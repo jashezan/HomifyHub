@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order {{ order.order_number }} - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Track Order {{ order.order_number }}</h1>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+        <p><strong>Order Status:</strong> {{ order.status }}</p>
+        {% if tracking %}
+            <p><strong>Delivery Status:</strong> {{ tracking.status }}</p>
+            {% if tracking.tracking_number %}
+                <p><strong>Tracking Number:</strong> {{ tracking.tracking_number }}</p>
+            {% endif %}
+            {% if tracking.courier %}
+                <p><strong>Courier:</strong> {{ tracking.courier }}</p>
+            {% endif %}
+            {% if tracking.estimated_delivery %}
+                <p><strong>Estimated Delivery:</strong> {{ tracking.estimated_delivery|date:"Y-m-d"|default:"N/A" }}</p>
+            {% endif %}
+            {% if tracking.updates and tracking.updates|length > 0 %}
+                <h2 class="text-xl font-bold mt-4 mb-2">Tracking Updates</h2>
+                <ul class="list-disc pl-6">
+                    {% for update in tracking.updates %}
+                        <li>{{ update.date|default:"N/A" }}: {{ update.status|default:"No status" }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% else %}
+            <p>Tracking information not available yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

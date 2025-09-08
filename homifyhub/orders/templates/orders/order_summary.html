@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Order Summary - HomifyHub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Order Summary</h1>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        {% if order.delivery_address %}
+            <p><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+        {% endif %}
+        {% if order.billing_address %}
+            <p><strong>Billing Address:</strong> {{ order.billing_address }}</p>
+        {% endif %}
+        {% if order.delivery_method %}
+            <p><strong>Delivery Method:</strong> {{ order.delivery_method }}</p>
+        {% endif %}
+        {% if order.coupon %}
+            <p><strong>Coupon:</strong> {{ order.coupon.code }} (-${{ order.coupon.discount_amount }})</p>
+        {% endif %}
+        <h2 class="text-xl font-bold mt-4 mb-2">Items</h2>
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border p-2">Item</th>
+                    <th class="border p-2">Quantity</th>
+                    <th class="border p-2">Price</th>
+                    <th class="border p-2">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td class="border p-2">{{ item.variant.name if item.variant else (item.bundle.name if item.bundle else 'Unknown Item') }}</td>
+                        <td class="border p-2">{{ item.quantity }}</td>
+                        <td class="border p-2">${{ item.price_at_purchase }}</td>
+                        <td class="border p-2">${{ item.subtotal }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="font-bold mt-4">Total: ${{ order.total_amount }}</p>
+        {% if payment %}
+            <p><strong>Payment Status:</strong> {{ payment.status }}</p>
+        {% endif %}
+        {% if not payment or payment.status != 'Completed' %}
+            <a href="{% url 'payments:payment_form' order.id %}" class="btn btn-primary mt-4">Proceed to Payment</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
