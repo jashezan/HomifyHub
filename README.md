@@ -227,8 +227,8 @@ For support or questions, please open an issue on the GitHub repository.
 
 ## Screenshots
 
-![Screenshot1](./media/screenshots/Screenshot_01.png)
-![Screenshot2](./media/screenshots/Screenshot_02.png)
-![Screenshot3](./media/screenshots/Screenshot_03.png)
-![Screenshot4](./media/screenshots/Screenshot_04.png)
-![Screenshot5](./media/screenshots/Screenshot_05.png)
+![Screenshot1](./assets/screenshots/Screenshot_01.png)
+![Screenshot2](./assets/screenshots/Screenshot_02.png)
+![Screenshot3](./assets/screenshots/Screenshot_03.png)
+![Screenshot4](./assets/screenshots/Screenshot_04.png)
+![Screenshot5](./assets/screenshots/Screenshot_05.png)
