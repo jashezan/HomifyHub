@@ -1,72 +1,234 @@
 # HomifyHub
 
-HomifyHub is a web application that allows users to create and manage their products for sale. It is built with only Django and Bootstrap.
+HomifyHub is a comprehensive e-commerce web application built with Django that allows users to browse, purchase, and manage home and lifestyle products. The platform features a modern design with social authentication, payment processing, and a full-featured shopping experience. This project is under active development and aims to provide a robust solution for online retail.
+
+## Features
+
+- **User Management**: Custom user authentication with social login (Google, Facebook)
+- **Product Catalog**: Comprehensive product management with categories, images, and filtering
+- **Shopping Cart & Wishlist**: Full cart functionality with persistent storage
+- **Order Management**: Complete order processing and tracking system
+- **Payment Processing**: Integrated payment gateway support
+- **Blog System**: Content management for articles and updates
+- **Admin Dashboard**: Full administrative interface for managing all aspects
+- **Responsive Design**: Mobile-friendly interface using modern CSS frameworks
+
+## Technology Stack
+
+- **Backend**: Django 5.2.6
+- **Database**: SQLite (development), PostgreSQL support (production)
+- **Frontend**: Django templates with Jinja2, Bootstrap/Tailwind CSS
+- **Authentication**: Django Allauth with social providers
+- **Image Processing**: Django ImageKit
+- **Task Queue**: Celery with Redis
+- **Other**: Django Filter, Django Crispy Forms, WeasyPrint for PDFs
 
 ## Setup
 
-The first thing to do is to clone the repository:
+### Prerequisites
 
-```sh
-$ git clone https://github.com/jashezan/HomifyHub.git
-$ cd HomifyHub
+- Python 3.8 or higher
+- Git
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/jashezan/HomifyHub.git
+cd HomifyHub
 ```
 
-Create a virtual environment to install dependencies in and activate it:
+2. Create and activate a virtual environment:
 
-```sh
-$ python -m venv .venv
-$ source .venv/bin/activate
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-Then install the dependencies (poetry):
+3. Install dependencies:
 
-```sh
-(.venv)$ pip install poetry
+```bash
+pip install -r requirements.txt
 ```
 
-NB: (.venv) in the command above is the name of the virtual environment. It is assumed that the virtual environment is activated.
+4. Set up environment variables:
 
-The project uses poetry for dependency management. To install the dependencies, run:
+Copy `.env.local` to `.env` and configure your settings:
 
-```sh
-(.venv)$ poetry install
+```bash
+cp .env.local .env
 ```
 
-Once `poetry install` is run, the dependencies will be installed and a virtual environment will be created. The virtual environment will be located in the `.venv` directory.
+Edit the `.env` file with your actual values:
+- Database credentials (if using PostgreSQL)
+- Secret key for Django
+- API keys for social authentication
+- External service credentials (Twilio, ImgBB)
 
-## Running the project
+5. Navigate to the Django project directory:
 
-To run the project, run the following command:
-
-```sh
-(.venv)$ poetry run start
+```bash
+cd homifyhub
 ```
 
-The project will be available at `http://localhost:8000`.
+6. Apply database migrations:
 
-If you see migrations errors, run the following command:
-
-```sh
-(.venv)$ poetry run migrate-db
+```bash
+python manage.py migrate
 ```
 
-This will apply the migrations to the database.
+7. Create a superuser account:
 
-## Creating a superuser
-
-To create a superuser, run the following command:
-
-```sh
-(.venv)$ poetry run superuser
+```bash
+python manage.py createsuperuser
 ```
 
-This will prompt you to enter a username, email, and password for the superuser.
+8. Collect static files:
 
-## About
+```bash
+python manage.py collectstatic
+```
 
-The project is built with Django and Bootstrap. It is a simple web application that allows users to create and manage products for sale. The project is built with the following features:
+## Running the Application
 
-- Product creation
-- Product update
-- Product deletion
-- Product listing
+### Development Server
+
+Start the Django development server:
+
+```bash
+cd homifyhub
+python manage.py runserver
+```
+
+The application will be available at `http://localhost:8000`
+
+### Using Makefile Commands
+
+Alternatively, you can use the provided Makefile for common tasks:
+
+```bash
+# Run development server
+make run
+
+# Create database migrations
+make makemigrations
+
+# Apply migrations
+make migrate
+
+# Create superuser
+make superuser
+
+# Install dependencies
+make install
+
+# Run tests
+make test
+
+# See all available commands
+make help
+```
+
+## Project Structure
+
+```
+HomifyHub/
+├── homifyhub/                 # Main Django project directory
+│   ├── manage.py             # Django management script
+│   ├── homifyhub/            # Project settings
+│   ├── core/                 # Core functionality and utilities
+│   ├── users/                # User management and authentication
+│   ├── products/             # Product catalog and management
+│   ├── orders/               # Order processing and tracking
+│   ├── carts/                # Shopping cart and wishlist
+│   ├── payments/             # Payment processing
+│   ├── blogs/                # Blog and content management
+│   ├── site_settings/        # Site configuration
+│   ├── templates/            # Global templates
+│   └── static/               # Static files (CSS, JS, images)
+├── media/                    # User uploaded files
+├── requirements.txt          # Python dependencies
+├── Makefile                  # Common development tasks
+└── README.md                 # This file
+```
+
+## Configuration
+
+### Environment Variables
+
+Key environment variables in `.env`:
+
+- `SECRET_KEY`: Django secret key
+- `DEBUG`: Debug mode (True/False)
+- `DB_*`: Database configuration
+- `GOOGLE_CLIENT_ID` & `GOOGLE_SECRET`: Google OAuth
+- `FACEBOOK_CLIENT_ID` & `FACEBOOK_SECRET`: Facebook OAuth
+- `IMGBB_API_KEY`: Image hosting service
+- `TWILIO_*`: SMS service configuration
+
+### Database
+
+The project uses SQLite by default for development. For production, configure PostgreSQL in your `.env` file.
+
+## Development
+
+### Creating a New App
+
+```bash
+python manage.py startapp app_name
+```
+
+Don't forget to add the new app to `INSTALLED_APPS` in settings.py.
+
+### Running Tests
+
+```bash
+python manage.py test
+# or
+make test
+```
+
+### Code Quality
+
+```bash
+# Lint code
+make lint
+
+# Format code
+make format
+```
+
+## Deployment
+
+For production deployment:
+
+1. Set `DEBUG=False` in your `.env` file
+2. Configure your production database
+3. Set up static file serving
+4. Configure your web server (nginx/Apache)
+5. Use a WSGI server like Gunicorn
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is open source. Please check the repository for license details.
+
+## Support
+
+For support or questions, please open an issue on the GitHub repository.
+
+## Screenshots
+
+![Screenshot1](media/screenshots/Screenshot_01.png)
+![Screenshot2](media/screenshots/Screenshot_02.png)
+![Screenshot3](media/screenshots/Screenshot_03.png)
+![Screenshot4](media/screenshots/Screenshot_04.png)
+![Screenshot5](media/screenshots/Screenshot_05.png)
