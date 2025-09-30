@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Welcome Back - Login | HomifyHub{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="auth-icon auth-icon-login">
+        <i class="fas fa-user-circle text-white text-3xl"></i>
+      </div>
+      <h2 class="auth-title auth-title-login">Welcome back!</h2>
+      <p class="auth-subtitle">Sign in to your account to continue shopping</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-form-card">
+      {% if form.errors %}
+      <div class="auth-error-card">
+        <div class="auth-error-content">
+          <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
+          <div>
+            <h4 class="auth-error-title">Please fix the following errors:</h4>
+            <ul class="auth-error-list">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li class="flex items-center">
+                    <i class="fas fa-dot-circle text-xs mr-2"></i>
+                    {{ field|title }}: {{ error }}
+                  </li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate class="space-y-6" id="login-form">
+        {% csrf_token %}
+
+        <!-- Username/Email -->
+        <div class="form-group">
+          <label
+            for="id_username"
+            class="form-label {% if form.username.errors %}form-label-error{% endif %}"
+          >
+            <i class="fas fa-user text-blue-500 mr-2"></i>Username or Email *
+          </label>
+          <input
+            type="text"
+            name="username"
+            id="id_username"
+            class="input-field {% if form.username.errors %}input-field-error{% endif %}"
+            placeholder="Enter your username or email"
+            aria-describedby="username_help"
+            value="{{ form.username.value|default:'' }}"
+            required
+            autocomplete="username"
+          />
+          {% if form.username.errors %}
+          <div class="form-error-message">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            {{ form.username.errors.0 }}
+          </div>
+          {% else %}
+          <div id="username_help" class="form-help">
+            Your username or email address
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label
+            for="id_password"
+            class="form-label {% if form.password.errors %}form-label-error{% endif %}"
+          >
+            <i class="fas fa-lock text-blue-500 mr-2"></i>Password *
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="input-field auth-password-input {% if form.password.errors %}input-field-error{% endif %}"
+              placeholder="Enter your password"
+              aria-describedby="password_help"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              onclick="HomifyHub.togglePassword('id_password', this)"
+              class="auth-password-toggle"
+              aria-label="Toggle password visibility"
+            >
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          {% if form.password.errors %}
+          <div class="form-error-message">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            {{ form.password.errors.0 }}
+          </div>
+          {% else %}
+          <div id="password_help" class="form-help">Your account password</div>
+          {% endif %}
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="auth-remember-section">
+          <div class="auth-checkbox-wrapper">
+            <div class="flex items-center h-5">
+              <input
+                id="remember_me"
+                name="remember_me"
+                type="checkbox"
+                class="auth-checkbox"
+              />
+            </div>
+            <label for="remember_me" class="auth-checkbox-label">
+              Remember me
+            </label>
+          </div>
+          <a href="{% url 'core:forgot_password' %}" class="auth-forgot-link">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="auth-submit-btn">
+          <i class="fas fa-sign-in-alt mr-2"></i>
+          Sign In
+        </button>
+      </form>
+
+      <!-- Don't have account -->
+      <div class="auth-link-section">
+        <p class="auth-link-text">
+          Don't have an account?
+          <a href="{% url 'users:register' %}" class="auth-link">
+            Create one here
+          </a>
+        </p>
+      </div>
+
+      <!-- Social Login -->
+      <div class="auth-social-divider">
+        <div class="auth-social-line">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="auth-social-text">Or continue with</span>
+          </div>
+        </div>
+
+        <div class="auth-social-buttons">
+          <a href="{% url 'google_login' %}" class="auth-social-btn">
+            <i class="fab fa-google text-red-500 mr-2"></i>
+            Google
+          </a>
+          <a href="{% url 'facebook_login' %}" class="auth-social-btn">
+            <i class="fab fa-facebook text-blue-600 mr-2"></i>
+            Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust Indicators -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+      <div class="text-center">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <i class="fas fa-shield-alt text-green-600"></i>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900">Secure Login</h3>
+        <p class="text-xs text-gray-600">256-bit SSL encryption</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <i class="fas fa-users text-blue-600"></i>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900">Trusted by 10K+</h3>
+        <p class="text-xs text-gray-600">Happy customers</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <i class="fas fa-clock text-purple-600"></i>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900">Quick Access</h3>
+        <p class="text-xs text-gray-600">One-click checkout</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Password toggle functionality is handled by centralized HomifyHub JavaScript -->
+{% endblock %}
